@@ -25,3 +25,4 @@ https://blog.csdn.net/real_myth/article/details/78719244
     [root@huawei4g ~]# docker pull registry.access.redhat.com/rhel7/pod-infrastructure:latest  #拉取该镜像
 
      结果：到master查看pods状态
+     [root@huawei4g ~]# kubectl get pods #看到状态变为running
