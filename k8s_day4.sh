@@ -2,6 +2,8 @@
 https://blog.csdn.net/real_myth/article/details/78719244
 ########################################################
 ●kubernetes 常用命令
+[root@huawei_8g k8s]# kubectl describe #查看资源缩写
+[root@huawei_8g k8s]# source <(kubectl completion bash)  #支持TAB
 [root@huawei_8g k8s]# kubectl cluster-info  #查看集群状态
 [root@huawei_8g k8s]# kubectl get nodes     #查看节点状态
 [root@huawei_8g k8s]# kubectl run nginx --image nginx --port 8001  #运行一个共有仓库
