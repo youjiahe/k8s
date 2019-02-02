@@ -34,7 +34,8 @@ export http_proxy=http://$PROXY_HOST:8118
 export https_proxy=http://$PROXY_HOST:8118
 export no_proxy=localhost,172.16.0.0/16,192.168.0.0/16.,127.0.0.1,10.10.0.0/16
 ##################################################################################
-接下来，就在CentOS机器上开始实战吧；  #可以运行脚本 init.sh
+接下来，就在CentOS机器上开始实战吧；  
+#可以运行脚本 git/sh/ansible/k8s/init.sh  及 git/sh/ansible/k8s/docker_pkgs_scp.sh
 
 操作
 CentOS环境如果用到了Privoxy代理，需要执行下面的命令，这样执行yum的时候才能用到代理（实际证明，在安装kubelet、kubeadm、kubectl的时候，这一步很重要）：
