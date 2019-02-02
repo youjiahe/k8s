@@ -34,21 +34,21 @@ export http_proxy=http://$PROXY_HOST:8118
 export https_proxy=http://$PROXY_HOST:8118
 export no_proxy=localhost,172.16.0.0/16,192.168.0.0/16.,127.0.0.1,10.10.0.0/16
 ##################################################################################
-接下来，就在CentOS机器上开始实战吧；
+接下来，就在CentOS机器上开始实战吧；  #可以运行脚本 init.sh
 
 操作
 CentOS环境如果用到了Privoxy代理，需要执行下面的命令，这样执行yum的时候才能用到代理（实际证明，在安装kubelet、kubeadm、kubectl的时候，这一步很重要）：
 echo "proxy=http://127.0.0.1:8118" >> /etc/yum.conf
-1
+
 更新yum缓存：
 yum makecache
-1
+
 关闭防火墙：
 systemctl stop firewalld && systemctl disable firewalld
-1
+
 关闭swap：
 swapoff -a
-1
+
 然后再打开文件/etc/fstab，找到swap有关的一行，如下图红框所示，在这一行的最左边加上"#"，将该行注释掉：
 
 执行free -m命令检查，swap值应该都为0了，如下图红框所示：
@@ -58,7 +58,7 @@ swapoff -a
 执行命令：
 
 setenforce 0
-1
+
 iptable设置，不执行的话后面的初始化和节点加入都会失败：
 cat <<EOF >  /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
@@ -107,11 +107,11 @@ systemctl daemon-reload && systemctl restart docker
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
 enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+gpgcheck=0
+repo_gpgcheck=0
+gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
 
 安装kubelet、kubeadm、kubectl，并且将kubelet设置为自启动，然后再启动kubelet：
