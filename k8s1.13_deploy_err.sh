@@ -27,5 +27,14 @@ route add default gw 192.168.1.254 dev eth0
 #kubelet启动不成功，journalctl -xe -u kubelet 有以下报错
 failed to create kubelet: misconfiguration: kubelet cgroup driver: "cgroupfs" is different from docker cgroup driver: "systemd"
 #解决
+vi /usr/lib/systemd/system/docker.service
+
+找到
+--exec-opt native.cgroupdriver=systemd \
+修改为：
+--exec-opt native.cgroupdriver=cgroupfs \
+
+或者：
+vi /k8s/kubernetes/cfg/kubelet
 --cgroup-driver=systemd \
 kubelet的服务配置文件加上这么一行
