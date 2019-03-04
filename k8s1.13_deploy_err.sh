@@ -23,4 +23,9 @@ Failed to start Flanneld overlay address etcd agent.
 
 #解决  添加默认路由
 route add default gw 192.168.1.254 dev eth0
-
+##############################################################################################
+#kubelet启动不成功，journalctl -xe -u kubelet 有以下报错
+failed to create kubelet: misconfiguration: kubelet cgroup driver: "cgroupfs" is different from docker cgroup driver: "systemd"
+#解决
+--cgroup-driver=systemd \
+kubelet的服务配置文件加上这么一行
