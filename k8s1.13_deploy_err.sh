@@ -38,7 +38,7 @@ vi /usr/lib/systemd/system/docker.service
 vi /k8s/kubernetes/cfg/kubelet
 --cgroup-driver=systemd \
 kubelet的服务配置文件加上这么一行
-##############################################################################################
+ ##############################################################################################
 #问题：kubectl get csr 显示 no resoure found
 #并且查看节点 kubelet 日志看到 orbidden: node "192.168.1.100" cannot modify node #journalctl -xe -u kubelet
 
@@ -49,3 +49,14 @@ kubelet的服务配置文件加上这么一行
 修改这2个参数为你想要的名称，并且删除kubelet.kubeconfig(这个文件是master认证后客户端自动生成的，如果不删除会报node节点forbidden)文件，
 重新启动着2个服务，master端重新
 kubectl certificate approve  name名称  就可以看到新名称。
+
+##############################################################################################
+#问题：kubectl get nodes 显示 no resoure found
+#并且kubectl get csr只有approved 状态没有 issued状态
+#并且systemctl restart kubelet很慢
+
+#解决：
+查看 master组件的 ca 证书路径是否正确，(如/opt/应为 /k8s)
+vim /k8s/kubernetes/cfg/kube-apiserver
+vim /k8s/kubernetes/cfg/kube-scheduler
+vim /k8s/kubernetes/cfg/kube-controller-manager
