@@ -60,3 +60,58 @@ kubectl certificate approve  name名称  就可以看到新名称。
 vim /k8s/kubernetes/cfg/kube-apiserver
 vim /k8s/kubernetes/cfg/kube-scheduler
 vim /k8s/kubernetes/cfg/kube-controller-manager
+##############################################################################################
+#创建pod失败，比如dashboard
+#找到pod 执行kubectl get pod  -n kube-system
+#执行kubectl describe pod kubernetes-dashboard-66bb48f98c-lhlrl -n kube-system ，看到以下报错
+Events:
+  Type     Reason                  Age                   From                    Message
+  ----     ------                  ----                  ----                    -------
+  Warning  FailedCreatePodSandBox  3m9s (x70 over 104m)  kubelet, 192.168.1.102  Failed create pod sandbox: rpc error:
+  code = Unknown desc = failed pulling image "registry.cn-hangzhou.aliyuncs.com/google-containers/pause-amd64:3.0": 
+  Error response from daemon: Get https://registry.cn-hangzhou.aliyuncs.com/v2/: 
+  net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+
+
+#解决：
+1.DNS设置成114.114.114.114或者8.8.8.8
+  echo "nameserver 114.114.114.114" > /etc/resolv.conf
+2.搭建私有仓库 #并且同步以下两个文件到所有节点
+ echo "{
+ "insecure-registries" : ["k8s-reistry:5000"]
+ }" > /etc/docker/daemon.json
+ 
+ echo "192.168.1.100 k8s-registry" >> /etc/hosts
+
+3.重启docker
+4.拉取镜像
+docker search kubernetes-dashboard 
+docker pull siriuszg/kubernetes-dashboard-amd64 
+docker tag siriuszg/kubernetes-dashboard-amd64 k8s-registry:5000/kubernetes-dashboard-amd64:latest
+docker push k8s-registry:5000/kubernetes-dashboard-amd64:latest
+
+curl http://k8s-registry:5000/v2/_catalog  #看看仓库镜像
+curl http://k8s-registry:5000/v2/kubernetes-dashboard-amd64/list #查看版本
+
+5.修改镜像源
+vim /root/kubernetes/cluster/addons/dashboard/dashboard-controller.yaml
+34         image: k8s-registry:5000/kubernetes-dashboard-amd64
+
+6.重建
+cd /root/kubernetes/cluster/addons/dashboard
+kubectl delete -f dashboard-rbac.yaml
+kubectl delete -f dashboard-secret.yaml
+kubectl delete -f dashboard-configmap.yaml
+kubectl delete -f dashboard-controller.yaml
+kubectl delete -f dashboard-service.yaml
+
+kubectl create -f dashboard-rbac.yaml
+kubectl create -f dashboard-secret.yaml
+kubectl create -f dashboard-configmap.yaml
+kubectl create -f dashboard-controller.yaml
+kubectl create -f dashboard-service.yaml
+
+7.查看状态
+kubectl get pod -n kube-system
+kubectl describe pod kubernetes-dashboard-56bd959dd5-4k8cx -n kube-system
+##############################################################################################
