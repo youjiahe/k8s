@@ -148,3 +148,21 @@ kubectl delete -f kubernetes-dashboard.yaml
 kubectl create -f kubernetes-dashboard.yaml
 重启代理
 kubectl proxy --address=192.168.112.38 --disable-filter=true &
+
+########################################################################
+[root@k8s-master pod_test]# kubectl run -it --image=k8s-registry:5000/busybox:latest --rm --restart=Never shell
+If you don't see a command prompt, try pressing enter.
+/ # nslookup kubernetes
+Server:		10.0.0.2
+Address:	10.0.0.2:53
+
+** server can't find kubernetes.default.svc.cluster.local.: NXDOMAIN
+
+*** Can't find kubernetes.svc.cluster.local.: No answer
+*** Can't find kubernetes.cluster.local.: No answer
+*** Can't find kubernetes.default.svc.cluster.local.: No answer
+*** Can't find kubernetes.svc.cluster.local.: No answer
+*** Can't find kubernetes.cluster.local.: No answer
+
+
+
