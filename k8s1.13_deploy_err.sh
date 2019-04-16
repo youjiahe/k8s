@@ -115,3 +115,36 @@ kubectl create -f dashboard-service.yaml
 kubectl get pod -n kube-system
 kubectl describe pod kubernetes-dashboard-56bd959dd5-4k8cx -n kube-system
 ##############################################################################################
+#kubernetes-dashboard 状态为CrashLoopBackOff
+按照 https://blog.csdn.net/qq1083062043/article/details/84949924 创建的
+[root@k8s-master dashboard]# kubectl get all -n kube-system
+NAME                                        READY   STATUS             RESTARTS   AGE
+pod/coredns-7f5bdbf7bd-dm28f                0/1     CrashLoopBackOff   8          18m
+pod/kubernetes-dashboard-6bfccbbb9b-bjznz   0/1     CrashLoopBackOff   1          9s
+
+解决方案
+修改下载的kubernetes-dashboard.yaml文件，更改RoleBinding修改为ClusterRoleBinding，并且修改roleRef中的kind和name，用cluster-admin这个非常牛逼的CusterRole（超级使用户权限，其拥有访问kube-apiserver的所有权限）。如下：
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard-minimal
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-dashboard
+  namespace: kube-system
+
+---
+## 三步重新启动kubernetes-dashboard
+删除原先配置
+kubectl delete -f kubernetes-dashboard.yaml
+重新加载配置
+kubectl create -f kubernetes-dashboard.yaml
+重启代理
+kubectl proxy --address=192.168.112.38 --disable-filter=true &
