@@ -163,6 +163,9 @@ Address:	10.0.0.2:53
 *** Can't find kubernetes.default.svc.cluster.local.: No answer
 *** Can't find kubernetes.svc.cluster.local.: No answer
 *** Can't find kubernetes.cluster.local.: No answer
-
+########################################################################
+k8s部署好 prometheus + grafana后，prometheus采集不了数据
+原因：服务端的 prometheus 与客户端 浏览器时间不一致
+解决：服务端集群时间同步，并且修改为正确时间
 
 
